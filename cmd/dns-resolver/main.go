@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"net"
-
+	domain "github.com/carbans/dns-resolver/app/domain"
 	"github.com/miekg/dns"
+	"net"
 )
 
 func main() {
@@ -52,13 +52,19 @@ func handleUDPRequests(conn *net.UDPConn) {
 }
 
 // Function to check if the domain name is in the database
-func isInDatabase(domain string) bool {
+func isInDatabase(domainRequest string) bool {
 	// Perform the lookup in the database
 	// ...
-	fmt.Println("Looking up domain in the database:", domain)
-
-	// Return true if the domain is found in the database, false otherwise
-	return true
+	fmt.Println("Looking up domain in the database:", domainRequest)
+	s, err := domain.GetDomainByName(domainRequest)
+	if err != nil {
+		fmt.Println("Failed to get domain from database:", err)
+		return false
+	}
+	if s != nil {
+		return true
+	}
+	return false
 }
 
 func processDNSRequest(request []byte) []byte {
