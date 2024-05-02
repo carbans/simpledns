@@ -1,4 +1,4 @@
-module github.com/carbans
+module github.com/carbans/dns-resolver
 
 go 1.21.0
 
