@@ -55,6 +55,7 @@ func handleUDPRequests(conn *net.UDPConn) {
 func isInDatabase(domain string) bool {
 	// Perform the lookup in the database
 	// ...
+	fmt.Println("Looking up domain in the database:", domain)
 
 	// Return true if the domain is found in the database, false otherwise
 	return true
@@ -74,6 +75,7 @@ func processDNSRequest(request []byte) []byte {
 	// Acceder a los campos del mensaje DNS
 	fmt.Println("DNS Request ID:", msg.Id)
 	fmt.Println("DNS Request Questions:", msg.Question)
+	fmt.Println("DNS Request A:", msg.Question[0].Qtype)
 
 	// Verificar si el nombre de dominio está en la base de datos
 	domain := msg.Question[0].Name
@@ -92,25 +94,26 @@ func processDNSRequest(request []byte) []byte {
 }
 
 func buildDNSResponse(request *dns.Msg) []byte {
-	// Crear una instancia de un mensaje DNS de respuesta
 	response := new(dns.Msg)
+	response.SetReply(request)
+	response.Authoritative = true
+	domain := request.Question[0].Name
+	address := "8.8.8.8"
 
-	// Configurar el ID de la respuesta para que coincida con el ID de la solicitud
-	response.Id = request.Id
-
-	// Configurar el campo de banderas de la respuesta
-	response.Response = true
-	response.RecursionDesired = true
-	response.RecursionAvailable = true
-
-	// Configurar el campo de preguntas de la respuesta
-	response.Question = request.Question
-
-	// Configurar el campo de respuestas de la respuesta
-	// Aquí es donde agregaríamos las respuestas DNS específicas para el dominio solicitado
-	// ...
-
-	// Serializar el mensaje de respuesta en un formato de bytes
+	switch request.Question[0].Qtype {
+	case dns.TypeA, dns.TypeAAAA:
+		fmt.Println("A")
+		response.Answer = append(response.Answer, &dns.A{
+			Hdr: dns.RR_Header{Name: domain, Rrtype: dns.TypeA, Class: dns.ClassINET, Ttl: 60},
+			A:   net.ParseIP(address),
+		})
+	case dns.TypeCNAME:
+		fmt.Println("CNAME")
+		response.Answer = append(response.Answer, &dns.CNAME{
+			Hdr:    dns.RR_Header{Name: domain, Rrtype: dns.TypeCNAME, Class: dns.ClassINET, Ttl: 60},
+			Target: "www.google.com.",
+		})
+	}
 	responseBytes, err := response.Pack()
 	if err != nil {
 		fmt.Println("Failed to pack DNS response:", err)
