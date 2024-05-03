@@ -1,8 +1,9 @@
 package record
 
 import (
-	"github.com/carbans/dns-resolver/app/domain"
 	"time"
+
+	"github.com/carbans/simpledns/app/domain"
 )
 
 // Record represents a DNS record

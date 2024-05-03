@@ -1,4 +1,4 @@
-module github.com/carbans/dns-resolver
+module github.com/carbans/simpledns
 
 go 1.21.0
 

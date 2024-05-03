@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net"
 
-	client "github.com/carbans/dns-resolver/app/client"
-	domain "github.com/carbans/dns-resolver/app/domain"
+	client "github.com/carbans/simpledns/app/client"
+	domain "github.com/carbans/simpledns/app/domain"
 	"github.com/miekg/dns"
 )
 
