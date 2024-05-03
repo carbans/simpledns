@@ -6,22 +6,25 @@ import (
 
 	client "github.com/carbans/simpledns/app/client"
 	domain "github.com/carbans/simpledns/app/domain"
+	logger "github.com/carbans/simpledns/logger"
 	"github.com/miekg/dns"
+	"go.uber.org/zap"
 )
 
 func Serve() {
-	fmt.Println("Starting DNS server...")
+	log := logger.GetLogger()
+	log.Info("Starting DNS server...")
 
 	// Create a UDP listener on port 53
 	udpAddr, err := net.ResolveUDPAddr("udp", ":5353")
 	if err != nil {
-		fmt.Println("Failed to resolve UDP address:", err)
+		log.Error("Failed to resolve UDP address:", zap.Error(err))
 		return
 	}
 
 	udpConn, err := net.ListenUDP("udp", udpAddr)
 	if err != nil {
-		fmt.Println("Failed to listen on UDP:", err)
+		log.Error("Failed to listen on UDP:", zap.Error(err))
 		return
 	}
 
