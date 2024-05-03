@@ -7,9 +7,9 @@ import (
 )
 
 var domains = []*Domain{
-	NewDomain(1, "example.com"),
-	NewDomain(2, "example.net"),
-	NewDomain(3, "example.org"),
+	NewDomain(1, "example.com."),
+	NewDomain(2, "example.net."),
+	NewDomain(3, "example.org."),
 }
 
 // Domain represents a domain name
@@ -22,7 +22,6 @@ type Domain struct {
 
 // NewDomain creates a new domain instance
 func NewDomain(id int, name string) *Domain {
-
 	t := time.Now()
 	createdAt := t
 	updatedAt := t

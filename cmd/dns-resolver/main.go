@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
+	"net"
+
+	client "github.com/carbans/dns-resolver/app/client"
 	domain "github.com/carbans/dns-resolver/app/domain"
 	"github.com/miekg/dns"
-	"net"
 )
 
 func main() {
@@ -85,16 +87,14 @@ func processDNSRequest(request []byte) []byte {
 
 	// Verificar si el nombre de dominio está en la base de datos
 	domain := msg.Question[0].Name
+	var response []byte
 	if isInDatabase(domain) {
 		fmt.Println("Domain is in the database")
+		response = buildDNSResponse(msg)
 	} else {
 		fmt.Println("Domain is not in the database")
+		response = buildEmptyResponse(msg)
 	}
-
-	// Construir la respuesta DNS adecuada
-	response := buildDNSResponse(msg)
-
-	// Enviar la respuesta al cliente
 
 	return response
 }
@@ -126,5 +126,24 @@ func buildDNSResponse(request *dns.Msg) []byte {
 		return nil
 	}
 
+	return responseBytes
+}
+
+func buildEmptyResponse(request *dns.Msg) []byte {
+	client := client.NewDNSClient([]string{"8.8.8.8:53", "8.8.4.4:53"})
+	q := request.Question[0]
+	response, err := client.Resolve(q)
+	if err != nil {
+		fmt.Println("Failed to resolve DNS request:", err)
+		return nil
+	}
+
+	response.Id = request.Id
+
+	responseBytes, err := response.Pack()
+	if err != nil {
+		fmt.Println("Failed to pack DNS response:", err)
+		return nil
+	}
 	return responseBytes
 }
