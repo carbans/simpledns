@@ -27,7 +27,6 @@ jobs:
         with:
           go-version: 1.21
           cache: true
-      - run: go mod tidy
       - name: Build Docker Image
         uses: docker/login-action@v3
         with:
