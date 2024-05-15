@@ -2,8 +2,8 @@ FROM scratch
 
 COPY simpledns /
 
-EXPOSE 53/udp
-EXPOSE 53/tcp
+EXPOSE 5353/udp
+EXPOSE 5353/tcp
 
 
 ENTRYPOINT ["/simpledns"]
